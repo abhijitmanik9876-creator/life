@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Birthday Gift 🎁</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* ---------- Gift Box ---------- */
+    .giftbox-container {
+      height: 100vh;
+      background: #d9534f;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      transition: opacity 0.5s ease-in-out;
+    }
+
+    .giftbox {
+      position: relative;
+      width: 250px;
+      height: 200px;
+      background: #2c3e50;
+      cursor: pointer;
+      transition: all 0.5s ease-in-out;
+    }
+    .giftbox:before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 110px;
+      width: 30px;
+      height: 200px;
+      background: #f1c40f;
+    }
+    .lid {
+      position: absolute;
+      top: -60px;
+      left: 0;
+      width: 250px;
+      height: 60px;
+      background: #34495e;
+      transform-origin: bottom;
+      transition: transform 0.5s ease-in-out;
+    }
+    .lid:before {
+      content: "";
+      position: absolute;
+      left: 110px;
+      width: 30px;
+      height: 60px;
+      background: #f1c40f;
+    }
+
+    .ribbon {
+      position: absolute;
+      top: -100px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 80px;
+    }
+    .ribbon::before,
+    .ribbon::after {
+      content: "";
+      position: absolute;
+      width: 60px;
+      height: 80px;
+      background: #f1c40f;
+      border-radius: 50% 50% 0 0;
+    }
+    .ribbon::before { left: -60px; transform: rotate(-20deg); }
+    .ribbon::after { right: -60px; transform: rotate(20deg); }
+    .ribbon .center {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 40px;
+      height: 40px;
+      background: #f39c12;
+      border-radius: 50%;
+    }
+
+    .giftbox:after {
+      content: "Click Me!";
+      position: absolute;
+      bottom: -40px;
+      width: 100%;
+      text-align: center;
+      font-size: 22px;
+      font-weight: bold;
+      color: #fff;
+      animation: bounce 1s infinite;
+    }
+    @keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+
+    /* ---------- Modals ---------- */
+    .modal {
+      display: none;
+      position: fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      background: rgba(0,0,0,0.7);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .modal-content {
+      background: #fff;
+      padding: 30px;
+      border-radius: 15px;
+      text-align: center;
+      max-width: 350px;
+    }
+    .modal-content button {
+      margin: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      background: #2c3e50;
+      color: #fff;
+    }
+    .word-inputs {
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .word-inputs input {
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      text-align: center;
+    }
+    .error-msg {
+      color: red;
+      margin-top: 10px;
+      display: none;
+    }
+
+    /* ---------- Gallery ---------- */
+    .gallery-container {
+      display: none;
+      padding: 20px;
+      background: linear-gradient(to right, #ffdde1, #ee9ca7);
+      min-height: 100vh;
+      text-align: center;
+    }
+    .gallery-container h1 {
+      margin: 20px;
+      font-size: 28px;
+      color: #fff;
+      text-shadow: 2px 2px 6px #000;
+    }
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      padding: 20px;
+    }
+    .gallery img {
+      width: 100%;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      transition: transform 0.3s ease-in-out;
+    }
+    .gallery img:hover { transform: scale(1.05); }
+
+    /* ---------- Music Player ---------- */
+    .music-player {
+      margin: 40px auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+    .controls { display: flex; gap: 20px; }
+    .controls button {
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 10px;
+      background: #2c3e50;
+      color: #fff;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .controls button:hover { transform: scale(1.1); }
+  </style>
+</head>
+<body>
+
+<!-- Gift Box -->
+<div class="giftbox-container" id="giftboxContainer">
+  <div class="giftbox" id="giftbox">
+    <div class="lid"></div>
+    <div class="ribbon"><div class="center"></div></div>
+  </div>
+</div>
+
+<!-- Yes/No Modal -->
+<div class="modal" id="modal">
+  <div class="modal-content" id="modalContent">
+    <p>Do you want to see my life? ❤️</p>
+    <button id="yesBtn">Yes</button>
+    <button id="noBtn">No</button>
+    <p id="noMessage" style="margin-top:15px;color:red; display:none;">🥺 Oh no… click Yes ❤️</p>
+
+    <!-- Magical words input -->
+    <div class="word-inputs" id="wordInputs">
+      <p>Enter the 3 magical words in your mind:</p>
+      <input type="text" id="word1" placeholder="1st word">
+      <input type="text" id="word2" placeholder="2nd word">
+      <input type="text" id="word3" placeholder="3rd word">
+      <button id="submitWords">Submit</button>
+      <p class="error-msg" id="errorMsg">Oops! Try again ❤️</p>
+    </div>
+  </div>
+</div>
+
+<!-- Gallery -->
+<div class="gallery-container" id="galleryContainer">
+  <h1>🎂 Happy Birthday My Life Partner ❤️</h1>
+  <div class="gallery">
+    <img src="images/img1.jpeg" alt="Pic 1">
+    <img src="images/img2.jpeg" alt="Pic 2">
+    <img src="images/img3.jpeg" alt="Pic 3">
+    <img src="images/img4.jpeg" alt="Pic 4">
+    <img src="images/img5.jpeg" alt="Pic 5">
+    <img src="images/img6.jpeg" alt="Pic 6">
+    <img src="images/img7.jpeg" alt="Pic 7">
+  </div>
+
+  <!-- Music Player with DJ GIF -->
+  <div class="music-player">
+    <div id="diskGif">
+      <div class="tenor-gif-embed" data-postid="2565137075919501566" data-share-method="host" data-aspect-ratio="1" data-width="100%">
+        <a href="https://tenor.com/view/disc-spinning-vinyl-dj-mixing-gif-2565137075919501566">Disc Spinning Sticker</a>
+        from <a href="https://tenor.com/search/disc-stickers">Disc Stickers</a>
+      </div>
+    </div>
+    <script type="text/javascript" async src="https://tenor.com/embed.js"></script>
+
+    <div class="controls">
+      <button id="playBtn">Play</button>
+      <button id="pauseBtn">Pause</button>
+    </div>
+
+    <audio id="song" src="music/song.mp3"></audio>
+  </div>
+</div>
+
+<script>
+const giftbox = document.getElementById("giftbox");
+const giftboxContainer = document.getElementById("giftboxContainer");
+const modal = document.getElementById("modal");
+const yesBtn = document.getElementById("yesBtn");
+const noBtn = document.getElementById("noBtn");
+const noMessage = document.getElementById("noMessage");
+
+const wordInputs = document.getElementById("wordInputs");
+const submitWords = document.getElementById("submitWords");
+const word1 = document.getElementById("word1");
+const word2 = document.getElementById("word2");
+const word3 = document.getElementById("word3");
+const errorMsg = document.getElementById("errorMsg");
+
+const galleryContainer = document.getElementById("galleryContainer");
+const song = document.getElementById("song");
+
+// Click gift box → show modal
+giftbox.addEventListener("click", () => {
+  const lid = giftbox.querySelector(".lid");
+  lid.style.transform = "rotateX(-120deg)";
+  setTimeout(() => {
+    modal.style.display = "flex";
+  }, 500);
+});
+
+// Yes → show magical word inputs
+yesBtn.addEventListener("click", () => {
+  noMessage.style.display = "none";
+  wordInputs.style.display = "flex";
+});
+
+// No → show message
+noBtn.addEventListener("click", () => {
+  noMessage.style.display = "block";
+});
+
+// Submit magical words
+submitWords.addEventListener("click", () => {
+  if(word1.value.trim().toLowerCase() === "i" &&
+     word2.value.trim().toLowerCase() === "love" &&
+     word3.value.trim().toLowerCase() === "you") {
+    modal.style.display = "none";
+    giftboxContainer.style.display = "none";
+    galleryContainer.style.display = "block";
+    song.play().catch(e => console.log("Autoplay prevented:", e));
+  } else {
+    errorMsg.style.display = "block";
+  }
+});
+
+// Music Player controls
+const playBtn = document.getElementById("playBtn");
+const pauseBtn = document.getElementById("pauseBtn");
+playBtn.addEventListener("click", () => song.play());
+pauseBtn.addEventListener("click", () => song.pause());
+</script>
+
+</body>
+</html>
